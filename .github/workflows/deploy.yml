@@ -89,7 +89,10 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./_site/
-          server-dir: ${{ secrets.FTP_REMOTE_DIR || './httpdocs/' }}
+          # Das FTP-Konto "github" ist in Plesk auf /nineteengolfguide.com
+          # eingesperrt - sein Wurzelverzeichnis IST also schon der Dokument-
+          # stamm. Deshalb './' und nicht './httpdocs/'.
+          server-dir: ${{ secrets.FTP_REMOTE_DIR || './' }}
           # Loescht NICHT den ganzen Webspace - nur abgleichen.
           dangerous-clean-slate: false
           exclude: |
@@ -131,7 +134,10 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./_site/
-          server-dir: ${{ secrets.FTP_REMOTE_DIR || './httpdocs/' }}
+          # Das FTP-Konto "github" ist in Plesk auf /nineteengolfguide.com
+          # eingesperrt - sein Wurzelverzeichnis IST also schon der Dokument-
+          # stamm. Deshalb './' und nicht './httpdocs/'.
+          server-dir: ${{ secrets.FTP_REMOTE_DIR || './' }}
           dangerous-clean-slate: false
           exclude: |
             **/.git*

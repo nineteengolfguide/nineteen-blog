@@ -6,8 +6,13 @@ Eleventy-Static-Site, deployed per GitHub Actions via FTPS auf Metanet.
 
 - **Zeus bietet KEIN SSH/SFTP.** Port 22 ist zu, Port 21 offen (ProFTPD mit
   `AUTH TLS`). Deshalb FTPS explizit — nicht auf SFTP umbauen.
-- **Webroot ist `./httpdocs/`** (Plesk/Metanet-Konvention). Ueberschreibbar
-  per Secret `FTP_REMOTE_DIR`.
+- **Webroot ist NICHT `httpdocs`.** Der Dokumentstamm von
+  nineteengolfguide.com ist in Plesk `/nineteengolfguide.com` (httpdocs
+  gehoert zu siebura.ch, das im selben Abo liegt). Das FTP-Konto `github`
+  ist auf dieses Verzeichnis eingesperrt, deshalb ist das Deploy-Ziel `./`.
+- **Plesk-Abo:** Systembenutzer `siburachsc`, Server zeus.metanet.ch
+  (80.74.156.75). Im selben Abo liegen siebura.ch (WordPress, ~650 MB) und
+  sibura.ch (Weiterleitung) — beim Deploy nicht anfassen.
 - **Domains:** `nineteengolfguide.com` = Testumfeld, live, auf
   zeus.metanet.ch (80.74.156.75). `nineteengolf.guide` = bestehende
   Produktion (80.74.146.65), wird erst uebernommen wenn das Testumfeld

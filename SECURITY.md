@@ -33,5 +33,8 @@ ausschliesslich als GitHub **Environment Secrets**:
 Benoetigte Secrets je Environment: `FTP_SERVER`, `FTP_USERNAME`,
 `FTP_PASSWORD`, `FTP_REMOTE_DIR`.
 
-Der FTPS-Account sollte auf das Web-Verzeichnis der jeweiligen Domain
-beschraenkt sein - kein Vollzugriff auf den gesamten Webspace.
+Der FTPS-Account ist auf das Web-Verzeichnis der Domain beschraenkt - kein
+Vollzugriff auf den gesamten Webspace. Konkret: das Plesk-Konto `github`
+hat als Basisverzeichnis `/nineteengolfguide.com` statt `/`. Damit kommt
+ein kompromittiertes GitHub-Secret nicht an die WordPress-Installation von
+siebura.ch, die im selben Abo liegt.
