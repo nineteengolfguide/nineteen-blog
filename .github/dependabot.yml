@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # npm-Abhaengigkeiten (Eleventy & Co.)
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Zurich
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    groups:
+      eleventy:
+        patterns:
+          - "@11ty/*"
+
+  # GitHub Actions selbst aktuell halten (die SHA-Pins im Workflow).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Zurich
+    commit-message:
+      prefix: "ci"

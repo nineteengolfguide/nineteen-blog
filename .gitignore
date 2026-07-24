@@ -1,3 +1,15 @@
 node_modules/
 _site/
 .DS_Store
+
+# Nie versehentlich Zugangsdaten committen
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+.netrc
+ftp-credentials*
+*.local

@@ -1,33 +1,138 @@
-name: Build and Deploy to Zeus
+name: Build & Deploy
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      target:
+        description: "Wohin deployen?"
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+# Nur lesen, ausser wo explizit mehr gebraucht wird.
+permissions:
+  contents: read
+
+# Nie zwei Deploys gleichzeitig auf denselben Webspace.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
+    name: Build (Eleventy)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: 20
+          persist-credentials: false
 
-      - name: Install dependencies
-        run: npm install
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
-      - name: Build site
+      - name: Install (lockfile-treu, keine install-scripts)
+        run: npm ci --ignore-scripts
+
+      - name: Audit (bricht bei high/critical ab)
+        run: npm audit --audit-level=high
+
+      - name: Build
         run: npm run build
 
-      - name: Deploy via FTP to Zeus
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Build-Ergebnis pruefen
+        run: |
+          test -f _site/index.html || { echo "::error::_site/index.html fehlt - Build kaputt"; exit 1; }
+          echo "Seiten gebaut: $(find _site -name '*.html' | wc -l)"
+
+  # --- STAGING: nineteen.blog ---------------------------------------------
+  # Laeuft automatisch bei jedem Push auf main.
+  deploy-staging:
+    name: Deploy -> nineteen.blog
+    needs: build
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && inputs.target == 'staging')
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://nineteen.blog
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+
+      - name: Upload via FTPS (explizites TLS)
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          # ftps = explizites TLS. Ohne das ginge das Passwort im Klartext
+          # ueber die Leitung - Zeus (ProFTPD) kann AUTH TLS.
+          protocol: ftps
+          port: 21
           local-dir: ./_site/
-          server-dir: ./httpdocs/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR || './httpdocs/' }}
+          # Loescht NICHT den ganzen Webspace - nur abgleichen.
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+
+  # --- PRODUCTION: nineteengolf.guide -------------------------------------
+  # Nur manuell, mit Freigabe ueber das GitHub-Environment "production".
+  deploy-production:
+    name: Deploy -> nineteengolf.guide
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'production'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://nineteengolf.guide
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+
+      - name: Upload via FTPS (explizites TLS)
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./_site/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR || './httpdocs/' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
