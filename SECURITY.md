@@ -27,7 +27,7 @@ Wir melden uns innerhalb von 5 Werktagen zurueck.
 Es gehoeren **keine** Zugangsdaten ins Repository. Die FTPS-Zugaenge liegen
 ausschliesslich als GitHub **Environment Secrets**:
 
-- Environment `staging` -> nineteen.blog
+- Environment `staging` -> nineteengolfguide.com (Testumfeld, zeus.metanet.ch)
 - Environment `production` -> nineteengolf.guide
 
 Benoetigte Secrets je Environment: `FTP_SERVER`, `FTP_USERNAME`,

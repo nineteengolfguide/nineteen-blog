@@ -52,10 +52,11 @@ jobs:
           test -f _site/index.html || { echo "::error::_site/index.html fehlt - Build kaputt"; exit 1; }
           echo "Seiten gebaut: $(find _site -name '*.html' | wc -l)"
 
-  # --- STAGING: nineteen.blog ---------------------------------------------
-  # Laeuft automatisch bei jedem Push auf main.
+  # --- TESTUMFELD: nineteengolfguide.com ----------------------------------
+  # Live erreichbar, aber bewusst zum Ausprobieren. Laeuft automatisch bei
+  # jedem Push auf main. Liegt auf zeus.metanet.ch (80.74.156.75).
   deploy-staging:
-    name: Deploy -> nineteen.blog
+    name: Deploy -> nineteengolfguide.com
     needs: build
     if: >-
       github.event_name == 'push' ||
@@ -63,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
-      url: https://nineteen.blog
+      url: https://nineteengolfguide.com
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -97,7 +98,8 @@ jobs:
             **/node_modules/**
             **/.DS_Store
 
-  # --- PRODUCTION: nineteengolf.guide -------------------------------------
+  # --- PRODUKTION: nineteengolf.guide -------------------------------------
+  # Die bestehende Seite. Wird erst uebernommen, wenn das Testumfeld sitzt.
   # Nur manuell, mit Freigabe ueber das GitHub-Environment "production".
   deploy-production:
     name: Deploy -> nineteengolf.guide

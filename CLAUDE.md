@@ -6,13 +6,18 @@ Eleventy-Static-Site, deployed per GitHub Actions via FTPS auf Metanet.
 
 - **Zeus bietet KEIN SSH/SFTP.** Port 22 ist zu, Port 21 offen (ProFTPD mit
   `AUTH TLS`). Deshalb FTPS explizit — nicht auf SFTP umbauen.
-- **Webroot ist `./httpdocs/`** (Metanet-Konvention). Ueberschreibbar per
-  Secret `FTP_REMOTE_DIR`.
-- **Staging und Produktion liegen auf verschiedenen Metanet-Servern:**
-  nineteen.blog -> Zeus (80.74.156.75), nineteengolf.guide -> Univers
-  (80.74.146.65). Andere Zugangsdaten, deshalb getrennte Environments.
-- **Plan:** erst nineteen.blog perfektionieren, dann auf nineteengolf.guide
-  umziehen. Produktion ist bewusst manuell + freigabepflichtig.
+- **Webroot ist `./httpdocs/`** (Plesk/Metanet-Konvention). Ueberschreibbar
+  per Secret `FTP_REMOTE_DIR`.
+- **Domains:** `nineteengolfguide.com` = Testumfeld, live, auf
+  zeus.metanet.ch (80.74.156.75). `nineteengolf.guide` = bestehende
+  Produktion (80.74.146.65), wird erst uebernommen wenn das Testumfeld
+  sitzt. **`nineteen.blog` wird nie verwendet** — taucht es irgendwo auf,
+  ist es ein Ueberbleibsel.
+- **Metanet laeuft auf Plesk**, und Plesk kann per Git direkt von GitHub
+  ziehen. **Bewusst nicht genutzt:** Plesk zieht den Quellcode, Eleventy
+  braucht aber einen Build; ausserdem sind Plesks Deploy-Logs von aussen
+  nicht einsehbar, was Fehlersuche unmoeglich macht. Build gehoert auf den
+  GitHub-Runner, nur `_site/` geht rueber.
 
 ## Regeln fuer Aenderungen
 

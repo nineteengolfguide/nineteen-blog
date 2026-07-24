@@ -1,13 +1,15 @@
 # nineteen-blog
 
-NineteenGolf.Guide Blog — Eleventy Static Site, deployed via GitHub Actions auf Metanet.
+NineteenGolf Blog — Eleventy Static Site, deployed via GitHub Actions auf Metanet.
 
 | | |
 |---|---|
-| **Staging** | https://nineteen.blog (Metanet Zeus, `80.74.156.75`) — automatisch bei Push auf `main` |
-| **Produktion** | https://nineteengolf.guide (Metanet Univers, `80.74.146.65`) — nur manuell mit Freigabe |
+| **Testumfeld (live)** | https://nineteengolfguide.com — `zeus.metanet.ch` / `80.74.156.75` — automatisch bei Push auf `main` |
+| **Produktion** | https://nineteengolf.guide — `80.74.146.65` — nur manuell mit Freigabe, erst wenn das Testumfeld sitzt |
 | **Generator** | [Eleventy](https://www.11ty.dev/) 3.x |
 | **Transport** | FTPS (explizites TLS, Port 21) — Zeus bietet kein SSH |
+
+`nineteen.blog` wird **nicht** verwendet.
 
 ## Lokal arbeiten
 
@@ -45,7 +47,7 @@ Text …
 
 ## Deployen
 
-**Staging** passiert von selbst: Push auf `main` → Build → FTPS-Upload → nineteen.blog.
+**Testumfeld** passiert von selbst: Push auf `main` → Build → FTPS → nineteengolfguide.com
 
 **Produktion** bewusst:
 
@@ -55,11 +57,13 @@ gh workflow run "Build & Deploy" -f target=production
 
 Der Job wartet dann auf die Freigabe im Environment `production`.
 
-## Umzug nineteen.blog → nineteengolf.guide
+## Warum nicht Plesk-Git
 
-Wenn die Testphase sitzt, sind nur die Secrets im Environment `production` zu
-setzen (`FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_REMOTE_DIR` für
-Univers) — Workflow und Build bleiben unveraendert.
+Plesk kann per Git direkt von GitHub ziehen — bewusst nicht genutzt. Plesk
+zieht den *Quellcode*, Eleventy braucht aber einen Build-Schritt, und Plesks
+Deploy-Logs sind von aussen nicht einsehbar. Der Build laeuft deshalb auf
+GitHub-Runnern (reproduzierbar, unabhaengig von der Node-Version auf dem
+Server), und nur das fertige `_site/` geht per FTPS rueber.
 
 ## Sicherheit
 

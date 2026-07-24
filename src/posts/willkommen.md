@@ -1,12 +1,12 @@
 ---
 layout: post.njk
-title: Willkommen bei nineteen.blog
+title: Willkommen beim NineteenGolf-Blog
 date: 2026-07-24
 permalink: /posts/willkommen/
 excerpt: Der Start unseres Golf-Blogs - was euch hier erwartet.
 ---
 
-Herzlich willkommen bei nineteen.blog, dem redaktionellen Ableger von NineteenGolf.Guide.
+Herzlich willkommen beim redaktionellen Ableger von NineteenGolf.Guide.
 
 Hier findet ihr kuenftig:
 
